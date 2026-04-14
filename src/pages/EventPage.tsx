@@ -145,7 +145,7 @@ export default function EventPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 text-brand font-semibold text-sm md:text-base">
-            <span className="text-xl">{t.emoji}</span> freewhen
+            <span className="text-xl">🍔</span> freewhen
           </div>
         </div>
 
