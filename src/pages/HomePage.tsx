@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { addDays } from 'date-fns';
 import Layout from '@/components/Layout';
 import ThemePicker from '@/components/ThemePicker';
 import TitleInput from '@/components/TitleInput';
 import Button from '@/components/Button';
+import RangeControl from '@/components/RangeControl';
 import type { ThemeId } from '@/types';
 import { DEFAULT_RANGE_DAYS } from '@/types';
 import { toIsoDate } from '@/lib/dates';
@@ -12,11 +14,14 @@ import { createEvent } from '@/lib/api';
 export default function HomePage() {
   const [theme, setTheme] = useState<ThemeId>('eating');
   const [title, setTitle] = useState('');
+  const [startDate, setStartDate] = useState<string>(() => toIsoDate(new Date()));
+  const [endDate, setEndDate] = useState<string>(() => toIsoDate(addDays(new Date(), DEFAULT_RANGE_DAYS - 1)));
+  const [rangeValid, setRangeValid] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
-  const canSubmit = title.trim().length > 0 && !loading;
+  const canSubmit = title.trim().length > 0 && rangeValid && !loading;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,14 +29,7 @@ export default function HomePage() {
     setLoading(true);
     setError(null);
     try {
-      const today = new Date();
-      const end = new Date();
-      end.setDate(today.getDate() + DEFAULT_RANGE_DAYS - 1);
-      const event = await createEvent({
-        title, theme,
-        startDate: toIsoDate(today),
-        endDate: toIsoDate(end),
-      });
+      const event = await createEvent({ title, theme, startDate, endDate });
       nav(`/${event.slug}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -72,9 +70,12 @@ export default function HomePage() {
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <p className="text-sm text-ink/50 pl-1 flex-1 min-w-0">
-              We'll open the next {DEFAULT_RANGE_DAYS} days for people to mark their availability.
-            </p>
+            <RangeControl
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(s, e) => { setStartDate(s); setEndDate(e); }}
+              onValidityChange={setRangeValid}
+            />
             <Button type="submit" disabled={!canSubmit} loading={loading} className="w-full sm:w-auto">
               Create Event
             </Button>
