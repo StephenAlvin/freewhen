@@ -21,7 +21,7 @@ Cute, login-free day-scheduling app — a when2meet clone with food / hiking / s
 git clone https://github.com/StephenAlvin/freewhen.git
 cd freewhen
 npm install
-npx wrangler d1 migrations apply freewhen --local   # create local SQLite
+npm run migrate:local     # create local SQLite
 ```
 
 ## Running locally
@@ -41,23 +41,13 @@ Vite hot reload. API calls will 404 — use this when you're only touching UI.
 
 ```bash
 npm run build
-npx wrangler pages dev dist --compatibility-date=2025-01-01 --compatibility-flags=nodejs_compat
+npm run pages:dev
 # → http://127.0.0.1:8788
 ```
 
 Everything works: create events, submit availability, heatmap. Data lives in `.wrangler/state/` (local-only, separate from production).
 
-If you added new components and want hot reload while testing the API, run both in separate terminals:
-
-```bash
-# Terminal 1
-npm run dev          # Vite dev at :5173
-
-# Terminal 2 (once to apply new changes)
-npm run build
-npx wrangler pages dev dist --port=8788
-# Re-run build + restart whenever you change Functions code
-```
+Re-run `npm run build` (and restart `pages:dev`) whenever you change Functions code or UI.
 
 ## Tests
 
@@ -77,11 +67,10 @@ git add -A && git commit -m "…"
 git push
 
 # 2. If you added a new migration in migrations/
-npx wrangler d1 migrations apply freewhen --remote
+npm run migrate:remote
 
 # 3. Build and deploy
-npm run build
-npx wrangler pages deploy dist --project-name freewhen
+npm run deploy
 ```
 
 The deploy uploads `dist/` (static assets) + `functions/` (API handlers) to Cloudflare Pages. Global edge rollout is ~30 seconds after upload.
@@ -96,7 +85,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://freewhen.me/
 ### View production logs
 
 ```bash
-npx wrangler pages deployment tail --project-name freewhen
+npm run tail
 ```
 
 Streams live logs from the deployed Functions. Useful for debugging API errors.
@@ -130,9 +119,9 @@ freewhen/
 ## Changing the database schema
 
 1. Create `migrations/000N_description.sql` with the new DDL
-2. Apply locally: `npx wrangler d1 migrations apply freewhen --local`
-3. Apply remotely before deploying the code that depends on it: `npx wrangler d1 migrations apply freewhen --remote`
-4. Commit the migration file + deploy
+2. Apply locally: `npm run migrate:local`
+3. Apply remotely before deploying the code that depends on it: `npm run migrate:remote`
+4. Commit the migration file + `npm run deploy`
 
 ## Adding a new theme
 
@@ -141,6 +130,22 @@ freewhen/
 3. Add a matching `functions/api/_lib/wordlists/<name>.ts` for the slug generator
 4. Register it in `functions/api/_lib/wordlists/index.ts`
 5. Add the new theme ID to the `ThemeId` union in `src/types.ts` and the `CHECK` constraint in `migrations/0001_init.sql` (or add a new migration to alter the constraint if prod is already deployed)
+
+## Scripts reference
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server for frontend-only work |
+| `npm run pages:dev` | Full-stack local server (frontend + API + local D1) |
+| `npm run build` | Build static assets into `dist/` |
+| `npm run deploy` | Build + push to Cloudflare Pages production |
+| `npm run tail` | Tail production logs |
+| `npm run migrate:local` | Apply D1 migrations to local SQLite |
+| `npm run migrate:remote` | Apply D1 migrations to production |
+| `npm run test` | Run all tests (frontend + workers) |
+| `npm run test:ui` | Frontend tests in watch mode |
+| `npm run test:workers` | Workers tests only |
+| `npm run typecheck` | TypeScript check without emit |
 
 ## Troubleshooting
 
