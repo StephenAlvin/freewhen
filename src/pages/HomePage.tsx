@@ -48,13 +48,10 @@ export default function HomePage() {
   return (
     <Layout theme={theme}>
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <div className="flex items-center gap-2 text-brand font-semibold text-lg">
             <span className="text-2xl">{tConfig.emoji}</span> freewhen
           </div>
-          <span className="hidden sm:inline-flex items-center gap-2 rounded-full bg-surface border border-soft px-4 py-2 text-xs text-brand font-medium shadow-card">
-            ✨ no login · day-only · free forever
-          </span>
         </div>
 
         <div className="text-center mb-8">

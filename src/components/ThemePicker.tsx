@@ -28,10 +28,7 @@ export default function ThemePicker({ value, onChange, className }: Props) {
             )}
           >
             <span className="text-2xl" aria-hidden="true">{t.emoji}</span>
-            <span className="flex flex-col">
-              <span className="text-sm font-semibold text-ink leading-none">{t.label}</span>
-              <span className="text-[10px] uppercase tracking-wide text-ink/50 mt-0.5">{t.tagline}</span>
-            </span>
+            <span className="text-sm font-semibold text-ink leading-none">{t.label}</span>
           </button>
         );
       })}
