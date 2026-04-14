@@ -42,8 +42,13 @@ body {
 .rdp-month { width: 100%; }
 .rdp-month_grid { width: 100%; table-layout: fixed; }
 .rdp-weekdays { text-align: center; }
-.rdp-weekday { padding: 0.5rem 0; color: var(--fw-ink); opacity: 0.6; font-weight: 600; font-size: 0.75rem; }
-.rdp-month_caption { font-weight: 600; color: var(--fw-ink); font-size: 1rem; padding: 0.5rem 0; }
+.rdp-weekday { padding: 1rem 0 0.5rem; color: var(--fw-ink); opacity: 0.6; font-weight: 600; font-size: 0.75rem; }
+.rdp-month_caption { font-weight: 500; color: var(--fw-ink); font-size: 1.25rem; padding: 0.5rem 0.75rem; margin-bottom: 1.25rem; }
+.rdp-root .rdp-nav { inset-inline-end: 0.75rem; }
+@media (min-width: 640px) {
+  .rdp-month_caption { padding: 0.5rem 1rem; }
+  .rdp-root .rdp-nav { inset-inline-end: 1rem; }
+}
 .rdp-day { text-align: center; padding: 2px; }
 .rdp-day_button {
   aspect-ratio: 1; border-radius: 12px; transition: transform 0.15s; width: 100%;

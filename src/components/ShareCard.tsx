@@ -23,11 +23,10 @@ export default function ShareCard({ url }: Props) {
 
   return (
     <div className="bg-surface rounded-chunk p-6 border border-[var(--fw-soft)] shadow-card flex flex-col sm:flex-row gap-5 items-center">
-      <div className="p-2 bg-white rounded-xl border-2 border-[var(--fw-soft)]">
+      {/* <div className="p-2 bg-white rounded-xl border-2 border-[var(--fw-soft)]">
         <canvas ref={canvasRef} width={120} height={120} aria-label="QR code to this event" />
-      </div>
+      </div> */}
       <div className="flex-1 w-full">
-        <div className="text-[11px] font-bold uppercase tracking-wide text-ink/50 mb-1">📱 Scan or share link</div>
         <div className="flex items-center justify-between gap-2 bg-[var(--fw-bg2)] border-2 border-dashed border-[color:rgba(253,186,116,0.7)] rounded-lg px-3 py-3 font-mono text-xs sm:text-sm break-all">
           <span>{url.replace(/^https?:\/\//, '')}</span>
           <button

@@ -56,20 +56,20 @@ export default function HomePage() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-ink">when r u free? 🧡</h1>
-          <p className="text-sm text-ink/60 mt-1">Pick a vibe, a range, and share the link.</p>
+          {/* <p className="text-sm text-ink/60 mt-1">Pick a vibe, a range, and share the link.</p> */}
         </div>
 
         <form onSubmit={onSubmit} className="grid gap-6 md:grid-cols-[200px,1fr]">
           <div>
-            <div className="text-[11px] font-bold uppercase tracking-wide text-ink/50 mb-2 pl-1">Choose your vibe</div>
+            <div className="text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1">Pick a theme</div>
             <ThemePicker value={theme} onChange={setTheme} />
           </div>
 
           <div className="space-y-5">
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-wide text-ink/50 mb-2 pl-1">Name it</div>
+              <div className="text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1">Name it</div>
               <TitleInput
-                placeholder="What are we planning? 🍽"
+                placeholder="What are we planning?"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 aria-label="Event title"
@@ -77,7 +77,7 @@ export default function HomePage() {
             </div>
 
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-wide text-ink/50 mb-2 pl-1">Pick a date range</div>
+              <div className="text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1">Pick a date range</div>
               <RangePicker value={range} onChange={setRange} />
               {rangeTooLong && (
                 <p className="mt-2 text-sm text-red-500 pl-2">Ranges must be {MAX_RANGE_DAYS} days or fewer.</p>
