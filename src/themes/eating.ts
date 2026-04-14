@@ -1,7 +1,7 @@
 import type { ThemeConfig } from './index';
 
 export const eating: ThemeConfig = {
-  id: 'eating', label: 'Eating', emoji: '🍽', tagline: 'yum',
+  id: 'eating', label: 'Eating', emoji: '🍔', tagline: 'yum',
   palette: {
     bg1: '#fff8ee', bg2: '#fff1e6',
     primary: '#f97316', primaryDark: '#c2410c',

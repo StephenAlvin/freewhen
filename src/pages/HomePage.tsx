@@ -50,7 +50,7 @@ export default function HomePage() {
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10">
         <div className="mb-8">
           <div className="flex items-center gap-2 text-brand font-semibold text-lg">
-            <span className="text-2xl">🍔</span> freewhen
+            <span className="text-2xl">{tConfig.emoji}</span> freewhen
           </div>
         </div>
 
