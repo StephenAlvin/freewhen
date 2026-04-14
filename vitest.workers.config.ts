@@ -5,6 +5,7 @@ export default defineWorkersConfig({
     include: ['functions/**/*.test.ts'],
     poolOptions: {
       workers: {
+        main: './tests/worker-entry.ts',
         wrangler: { configPath: './wrangler.toml' },
         miniflare: { d1Databases: ['DB'] },
       },

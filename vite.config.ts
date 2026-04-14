@@ -11,5 +11,6 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     globals: true,
     css: false,
+    exclude: ['**/node_modules/**', '**/dist/**', 'functions/**'],
   },
 });
