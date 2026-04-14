@@ -27,3 +27,25 @@ body {
     linear-gradient(135deg, var(--fw-bg1) 0%, var(--fw-bg2) 100%);
   background-attachment: fixed;
 }
+
+.rdp-root {
+  --rdp-accent-color: var(--fw-primary);
+  --rdp-background-color: var(--fw-soft);
+  --rdp-day_button-border-radius: 12px;
+  --rdp-day_button-width: 100%;
+  --rdp-day_button-height: auto;
+  --rdp-day-height: auto;
+  font-family: 'Fredoka', sans-serif;
+}
+.rdp-month_caption { font-weight: 600; color: var(--fw-ink); }
+.rdp-day_button {
+  aspect-ratio: 1; border-radius: 12px; transition: transform 0.15s;
+}
+.rdp-day_button:hover:not(:disabled) { transform: scale(1.05); background: var(--fw-soft); }
+.rdp-selected .rdp-day_button,
+.rdp-range_start .rdp-day_button,
+.rdp-range_end .rdp-day_button {
+  background: var(--fw-accent); color: white; font-weight: 600;
+}
+.rdp-range_middle .rdp-day_button { background: var(--fw-soft); }
+.rdp-outside .rdp-day_button { color: var(--fw-ink); opacity: 0.35; }
