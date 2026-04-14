@@ -65,6 +65,7 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
 
   const dragModeRef = useRef<boolean | null>(null);
   const draggedOverRef = useRef<Set<string>>(new Set());
+  const lastTouchAtRef = useRef(0);
   const mineRef = useRef(mine);
   const onToggleRef = useRef(onToggle);
 
@@ -152,9 +153,20 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
               data-date={date}
               aria-pressed={isMine}
               aria-label={label}
-              onMouseDown={(e) => { e.preventDefault(); startDrag(date); }}
-              onMouseEnter={() => applyAt(date)}
-              onTouchStart={(e) => { e.preventDefault(); startDrag(date); }}
+              onMouseDown={(e) => {
+                if (Date.now() - lastTouchAtRef.current < 500) return;
+                e.preventDefault();
+                startDrag(date);
+              }}
+              onMouseEnter={() => {
+                if (Date.now() - lastTouchAtRef.current < 500) return;
+                applyAt(date);
+              }}
+              onTouchStart={(e) => {
+                lastTouchAtRef.current = Date.now();
+                e.preventDefault();
+                startDrag(date);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
