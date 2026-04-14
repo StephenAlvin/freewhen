@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fw-brand: #be6b3a;
+  --fw-ink: #7c2d12;
+  --fw-soft: #fde68a;
+  --fw-accent: #f9a8d4;
+  --fw-bg1: #fff8ee;
+  --fw-bg2: #fff1e6;
+  --fw-primary: #f97316;
+  --fw-primary-dark: #c2410c;
+  --fw-heat-0: #fef8ed;
+  --fw-heat-1: #fef3c7;
+  --fw-heat-2: #fde68a;
+  --fw-heat-3: #fbbf24;
+  --fw-heat-4: #f59e0b;
+}
+html, body, #root { height: 100%; }
+body {
+  font-family: 'Fredoka', system-ui, sans-serif;
+  color: var(--fw-ink);
+  background:
+    radial-gradient(circle at 12% 22%, rgba(251,207,232,0.35) 0%, transparent 32%),
+    radial-gradient(circle at 88% 15%, rgba(253,230,138,0.4) 0%, transparent 28%),
+    linear-gradient(135deg, var(--fw-bg1) 0%, var(--fw-bg2) 100%);
+  background-attachment: fixed;
+}
