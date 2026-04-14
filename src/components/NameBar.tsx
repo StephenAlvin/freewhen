@@ -4,21 +4,16 @@ import type { ChangeEventHandler } from 'react';
 interface Props {
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
-  emoji?: string;
   className?: string;
 }
 
-export default function NameBar({ value, onChange, emoji = '🐰', className }: Props) {
+export default function NameBar({ value, onChange, className }: Props) {
   return (
     <div className={cn(
-      'flex items-center gap-3 bg-surface rounded-full px-4 py-3 border-2 border-[var(--fw-soft)] shadow-card',
+      'flex items-center gap-3 bg-surface rounded-chunk px-4 py-3 border-2 border-[var(--fw-soft)] shadow-card',
       className,
     )}>
-      <span aria-hidden="true" className="w-8 h-8 rounded-full flex items-center justify-center text-base"
-            style={{ background: 'var(--fw-accent)' }}>
-        {emoji}
-      </span>
-      <span className="text-xs text-ink/50 font-medium flex-shrink-0">who are you?</span>
+      <span className="text-sm font-semibold uppercase tracking-wide text-ink/50 flex-shrink-0">Who are you?</span>
       <input
         type="text"
         value={value}

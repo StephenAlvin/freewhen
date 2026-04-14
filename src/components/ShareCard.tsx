@@ -1,19 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import QRCode from 'qrcode';
+import { useState } from 'react';
 
 interface Props { url: string; }
 
 export default function ShareCard({ url }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    QRCode.toCanvas(canvasRef.current, url, {
-      width: 120, margin: 1,
-      color: { dark: '#1f2937', light: '#ffffff' },
-    }).catch((err: unknown) => console.error('QR render failed', err));
-  }, [url]);
 
   async function copy() {
     await navigator.clipboard.writeText(url);
@@ -22,22 +12,18 @@ export default function ShareCard({ url }: Props) {
   }
 
   return (
-    <div className="bg-surface rounded-chunk p-6 border border-[var(--fw-soft)] shadow-card flex flex-col sm:flex-row gap-5 items-center">
-      {/* <div className="p-2 bg-white rounded-xl border-2 border-[var(--fw-soft)]">
-        <canvas ref={canvasRef} width={120} height={120} aria-label="QR code to this event" />
-      </div> */}
-      <div className="flex-1 w-full">
-        <div className="flex items-center justify-between gap-2 bg-[var(--fw-bg2)] border-2 border-dashed border-[color:rgba(253,186,116,0.7)] rounded-lg px-3 py-3 font-mono text-xs sm:text-sm break-all">
-          <span>{url.replace(/^https?:\/\//, '')}</span>
-          <button
-            type="button"
-            onClick={copy}
-            className="shrink-0 bg-[var(--fw-soft)] text-brand font-semibold text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-md"
-          >
-            {copied ? 'Copied ✓' : 'Copy'}
-          </button>
-        </div>
-      </div>
+    <div className="flex items-center gap-3">
+      <span className="flex-1 font-mono font-semibold text-sm sm:text-base text-ink break-all border-[3px] border-dashed border-[color:rgba(253,186,116,1)] rounded-chunk px-4 py-2.5">
+        {url.replace(/^https?:\/\//, '')}
+      </span>
+      <button
+        type="button"
+        onClick={copy}
+        className="shrink-0 text-white font-semibold text-base px-5 py-2.5 rounded-chunk shadow-md hover:shadow-lg active:shadow-sm hover:brightness-110 active:brightness-95 transition-all"
+        style={{ background: 'var(--fw-primary)' }}
+      >
+        {copied ? 'Copied ✓' : 'Copy'}
+      </button>
     </div>
   );
 }

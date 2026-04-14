@@ -14,7 +14,7 @@ interface Props extends NativeButtonProps {
 
 export default function Button({ variant = 'primary', loading = false, disabled, children, className, ...rest }: Props) {
   const isDisabled = disabled || loading;
-  const base = 'inline-flex items-center justify-center gap-2 rounded-full font-semibold font-fredoka transition-all select-none';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-chunk font-semibold font-fredoka transition-all select-none';
   const primary = 'px-6 py-2.5 text-white text-base hover:brightness-110 active:brightness-95';
   const soft = 'px-5 py-2.5 bg-surface text-brand border border-soft text-sm hover:bg-[var(--fw-bg2)] active:brightness-95';
 

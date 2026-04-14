@@ -7,7 +7,7 @@ interface Props { value: ThemeId; onChange: (id: ThemeId) => void; className?: s
 export default function ThemePicker({ value, onChange, className }: Props) {
   return (
     <div
-      className={cn('grid grid-cols-4 gap-2 md:grid-cols-1 md:gap-2', className)}
+      className={cn('grid grid-cols-4 gap-2', className)}
       role="radiogroup"
       aria-label="Choose a theme"
     >
@@ -22,8 +22,7 @@ export default function ThemePicker({ value, onChange, className }: Props) {
             aria-checked={active}
             onClick={() => onChange(id)}
             className={cn(
-              'flex flex-col items-center gap-1 rounded-2xl border-2 bg-surface px-3 py-3 transition-all',
-              'md:flex-row md:gap-3 md:justify-start md:text-left md:px-4',
+              'flex flex-col items-center gap-1 rounded-chunk border-2 bg-surface px-3 py-3 transition-all',
               active ? 'border-brand -translate-y-0.5 shadow-card' : 'border-transparent hover:border-soft',
             )}
           >

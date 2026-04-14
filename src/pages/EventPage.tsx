@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import EventCalendar from '@/components/EventCalendar';
 import NameBar from '@/components/NameBar';
@@ -20,9 +20,6 @@ function fmt(iso: string): string {
 
 export default function EventPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const justCreated = searchParams.get('just-created') === '1';
-  const nav = useNavigate();
 
   const [data, setData] = useState<EventPayload | null>(null);
   const [status, setStatus] = useState<'loading'|'ok'|'notfound'|'error'>('loading');
@@ -86,7 +83,7 @@ export default function EventPage() {
   }
 
   async function submit() {
-    if (!slug || !name.trim()) return;
+    if (!slug || !name.trim() || mine.size === 0) return;
     setSubmitting(true);
     setErrorMsg(null);
     try {
@@ -101,11 +98,6 @@ export default function EventPage() {
     }
   }
 
-  function dismissShare() {
-    searchParams.delete('just-created');
-    setSearchParams(searchParams, { replace: true });
-  }
-
   if (status === 'loading') {
     return <Layout theme="eating"><main className="flex items-center justify-center min-h-screen"><p className="text-ink/50">Loading…</p></main></Layout>;
   }
@@ -117,23 +109,6 @@ export default function EventPage() {
   const t = getTheme(data.event.theme);
   const shareUrl = `${window.location.origin}/${data.event.slug}`;
 
-  if (justCreated) {
-    return (
-      <Layout theme={data.event.theme}>
-        <main className="max-w-3xl mx-auto px-4 py-10 text-center">
-          <h1 className="text-3xl font-bold mb-2 text-ink">Your gathering is ready to share! 🎉</h1>
-          <p className="text-ink/60 mb-6">Send this link to your people. They don't need an account.</p>
-          <ShareCard url={shareUrl} />
-          <div className="mt-6">
-            <Button onClick={() => { dismissShare(); nav(`/${data.event.slug}`, { replace: true }); }}>
-              Continue to event →
-            </Button>
-          </div>
-        </main>
-      </Layout>
-    );
-  }
-
   return (
     <Layout theme={data.event.theme}>
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10">
@@ -144,13 +119,13 @@ export default function EventPage() {
               🗓 {fmt(data.event.startDate)} – {fmt(data.event.endDate)} · {totalPeople} people
             </p>
           </div>
-          <div className="flex items-center gap-2 text-brand font-semibold text-sm md:text-base">
-            <span className="text-xl">{t.emoji}</span> freewhen
-          </div>
+          <Link to="/" className="flex items-center gap-2 text-brand font-semibold text-sm md:text-base hover:opacity-80 transition-opacity">
+            freewhen.me
+          </Link>
         </div>
 
         <div className="mb-5">
-          <NameBar value={name} onChange={(e) => setName(e.target.value)} emoji={t.emoji} />
+          <ShareCard url={shareUrl} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-[1.3fr,1fr]">
@@ -163,25 +138,24 @@ export default function EventPage() {
               mine={mine}
               onToggle={toggle}
             />
-            <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
-              {errorMsg && <span className="text-sm text-red-500">{errorMsg}</span>}
-              <div className="ml-auto w-full sm:w-auto">
-                <Button
-                  onClick={submit}
-                  loading={submitting}
-                  disabled={!name.trim()}
-                  variant="primary"
-                  className="w-full sm:w-auto"
-                >
-                  Submit {t.buttonEmoji}
-                </Button>
-              </div>
-            </div>
           </div>
 
           <div className="space-y-4">
+            <NameBar value={name} onChange={(e) => setName(e.target.value)} />
             <BestDays ranked={ranked} total={totalPeople} />
             <ParticipantChips names={names} youName={name} />
+            <div>
+              {errorMsg && <p className="text-sm text-red-500 mb-2">{errorMsg}</p>}
+              <Button
+                onClick={submit}
+                loading={submitting}
+                disabled={!name.trim() || mine.size === 0}
+                variant="primary"
+                className="w-full"
+              >
+                Submit {t.buttonEmoji}
+              </Button>
+            </div>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="text-ink/60 mb-6 max-w-sm">Double-check the link, or start a fresh one.</p>
         <Link
           to="/"
-          className="rounded-full bg-surface border border-soft px-5 py-3 font-semibold text-ink shadow-card hover:-translate-y-0.5 transition-transform"
+          className="rounded-chunk bg-surface border border-soft px-5 py-3 font-semibold text-ink shadow-card hover:-translate-y-0.5 transition-transform"
         >
           Create a new one →
         </Link>

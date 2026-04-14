@@ -38,7 +38,7 @@ export default function DriftingEmojis({ emojis, density = 1 }: Props) {
         <motion.span
           key={d.key}
           className="absolute"
-          style={{ top: d.top, left: d.left, fontSize: d.size, opacity: 0.28 }}
+          style={{ top: d.top, left: d.left, fontSize: d.size, opacity: 0.18 }}
           animate={{ x: [0, 12, -8, 0], y: [0, -14, 6, 0], rotate: [0, 8, -6, 0] }}
           transition={{ duration: d.duration, delay: d.delay, repeat: Infinity, ease: 'easeInOut' }}
         >
