@@ -1,11 +1,16 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from '@/pages/HomePage';
+import EventPage from '@/pages/EventPage';
+import NotFound from '@/components/NotFound';
+
 export default function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center font-fredoka">
-      <div className="text-center p-8 bg-surface rounded-chunk shadow-card">
-        <div className="text-6xl">🥐</div>
-        <h1 className="text-2xl mt-2 text-ink font-semibold">freewhen</h1>
-        <p className="text-sm text-ink/60">Tailwind loaded ✓</p>
-      </div>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/:slug" element={<EventPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
