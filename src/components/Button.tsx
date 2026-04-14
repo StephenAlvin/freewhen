@@ -14,13 +14,13 @@ interface Props extends NativeButtonProps {
 
 export default function Button({ variant = 'primary', loading = false, disabled, children, className, ...rest }: Props) {
   const isDisabled = disabled || loading;
-  const base = 'inline-flex items-center justify-center gap-2 rounded-full font-semibold font-fredoka transition-transform select-none';
-  const primary = 'px-8 py-4 text-white text-lg shadow-[0_4px_0_var(--fw-primary-dark),0_8px_20px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 active:translate-y-0';
-  const soft = 'px-5 py-3 bg-surface text-brand border border-soft shadow-card hover:-translate-y-0.5 active:translate-y-0';
+  const base = 'inline-flex items-center justify-center gap-2 rounded-full font-semibold font-fredoka transition-all select-none';
+  const primary = 'px-5 py-2 text-white text-sm hover:brightness-110 active:brightness-95';
+  const soft = 'px-4 py-2 bg-surface text-brand border border-soft text-sm hover:bg-[var(--fw-bg2)] active:brightness-95';
 
   return (
     <motion.button
-      whileTap={{ scale: 0.96 }}
+      whileTap={{ scale: 0.97 }}
       className={cn(
         base,
         variant === 'primary' && primary,
@@ -28,9 +28,7 @@ export default function Button({ variant = 'primary', loading = false, disabled,
         isDisabled && 'opacity-60 cursor-not-allowed',
         className,
       )}
-      style={variant === 'primary' ? {
-        background: `linear-gradient(180deg, var(--fw-primary) 0%, var(--fw-primary-dark) 100%)`,
-      } : undefined}
+      style={variant === 'primary' ? { background: 'var(--fw-primary)' } : undefined}
       disabled={isDisabled}
       {...rest}
     >
