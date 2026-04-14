@@ -36,10 +36,17 @@ body {
   --rdp-day_button-height: auto;
   --rdp-day-height: auto;
   font-family: 'Fredoka', sans-serif;
+  width: 100%;
 }
-.rdp-month_caption { font-weight: 600; color: var(--fw-ink); }
+.rdp-months { width: 100%; display: block; }
+.rdp-month { width: 100%; }
+.rdp-month_grid { width: 100%; table-layout: fixed; }
+.rdp-weekdays { text-align: center; }
+.rdp-weekday { padding: 0.5rem 0; color: var(--fw-ink); opacity: 0.6; font-weight: 600; font-size: 0.75rem; }
+.rdp-month_caption { font-weight: 600; color: var(--fw-ink); font-size: 1rem; padding: 0.5rem 0; }
+.rdp-day { text-align: center; padding: 2px; }
 .rdp-day_button {
-  aspect-ratio: 1; border-radius: 12px; transition: transform 0.15s;
+  aspect-ratio: 1; border-radius: 12px; transition: transform 0.15s; width: 100%;
 }
 .rdp-day_button:hover:not(:disabled) { transform: scale(1.05); background: var(--fw-soft); }
 .rdp-selected .rdp-day_button,
