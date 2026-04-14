@@ -6,4 +6,4 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "freewhen"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "c478d11d-4d9c-48b3-9612-c2ce3c946d74"
