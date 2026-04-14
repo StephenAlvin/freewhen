@@ -35,6 +35,6 @@ export interface UpsertSubmissionRequest {
 }
 
 export const MAX_RANGE_DAYS = 90;
-export const DEFAULT_RANGE_DAYS = 45;
+export const DEFAULT_RANGE_DAYS = 30;
 export const MAX_TITLE_LEN = 120;
 export const MAX_NAME_LEN = 40;
