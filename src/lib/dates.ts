@@ -1,3 +1,5 @@
+import { MAX_RANGE_DAYS } from '@/types';
+
 const ISO_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 export function toIsoDate(d: Date): string {
@@ -39,4 +41,14 @@ export function enumerateDates(startIso: string, endIso: string): string[] {
     d.setDate(d.getDate() + 1);
   }
   return out;
+}
+
+export type RangeError = null | 'invalid' | 'past-start' | 'end-before-start' | 'too-long';
+
+export function validateRange(start: string, end: string, todayIso: string): RangeError {
+  if (!isValidIsoDate(start) || !isValidIsoDate(end)) return 'invalid';
+  if (start < todayIso) return 'past-start';
+  if (end < start) return 'end-before-start';
+  if (daysBetween(start, end) > MAX_RANGE_DAYS) return 'too-long';
+  return null;
 }

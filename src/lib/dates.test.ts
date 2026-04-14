@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toIsoDate, isValidIsoDate, daysBetween, enumerateDates } from './dates';
+import { toIsoDate, isValidIsoDate, daysBetween, enumerateDates, validateRange } from './dates';
 
 describe('toIsoDate', () => {
   it('formats a Date as YYYY-MM-DD', () => {
@@ -39,5 +39,39 @@ describe('enumerateDates', () => {
   });
   it('returns a single day when start === end', () => {
     expect(enumerateDates('2026-04-14', '2026-04-14')).toEqual(['2026-04-14']);
+  });
+});
+
+describe('validateRange', () => {
+  const today = '2026-04-14';
+
+  it('accepts a valid range', () => {
+    expect(validateRange('2026-04-14', '2026-05-13', today)).toBeNull();
+    expect(validateRange('2026-04-14', '2026-04-14', today)).toBeNull();
+  });
+
+  it('rejects unparseable ISO strings', () => {
+    expect(validateRange('2026-4-14', '2026-05-01', today)).toBe('invalid');
+    expect(validateRange('2026-04-14', 'nope', today)).toBe('invalid');
+    expect(validateRange('', '', today)).toBe('invalid');
+  });
+
+  it('rejects a start date before today', () => {
+    expect(validateRange('2026-04-13', '2026-05-01', today)).toBe('past-start');
+  });
+
+  it('rejects an end date before the start date', () => {
+    expect(validateRange('2026-04-20', '2026-04-15', today)).toBe('end-before-start');
+  });
+
+  it('rejects a range longer than 90 days (inclusive)', () => {
+    expect(validateRange('2026-04-14', '2026-07-12', today)).toBeNull();   // 90 days
+    expect(validateRange('2026-04-14', '2026-07-13', today)).toBe('too-long'); // 91 days
+  });
+
+  it('checks in order: invalid > past-start > end-before-start > too-long', () => {
+    expect(validateRange('bad', 'bad', today)).toBe('invalid');
+    expect(validateRange('2026-04-13', '2026-04-10', today)).toBe('past-start');
+    expect(validateRange('2026-04-14', '2026-04-13', today)).toBe('end-before-start');
   });
 });
