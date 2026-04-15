@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 
-const WEBHOOK_URL =
-  'https://discord.com/api/webhooks/1493902513747787906/FtVs2Rowm-XZQ-dbrgsIcO9ikw7v6o5kPEzk-ve29Q0eK1NL1sGK8NL1ZQQaYZtJGdcm';
-
 interface Props { open: boolean; onClose: () => void }
 
 export default function FeedbackDialog({ open, onClose }: Props) {
@@ -29,10 +26,10 @@ export default function FeedbackDialog({ open, onClose }: Props) {
     setStatus('sending');
     setErrorMsg(null);
     try {
-      const res = await fetch(WEBHOOK_URL, {
+      const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: `**${location.pathname}**\n${trimmed}` }),
+        body: JSON.stringify({ text: trimmed, path: location.pathname }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setStatus('sent');

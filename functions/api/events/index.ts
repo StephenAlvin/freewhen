@@ -17,7 +17,6 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   if (!result.ok) return json(400, { error: result.error });
 
   const now = Math.floor(Date.now() / 1000);
-  let lastError: unknown = null;
   for (let i = 0; i < MAX_RETRIES; i++) {
     const slug = generateSlug(result.value.theme);
     const record = {
@@ -34,13 +33,14 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('UNIQUE') || msg.includes('constraint')) {
-        lastError = err;
+        console.error('slug collision, retrying', { attempt: i });
         continue;
       }
       throw err;
     }
   }
-  return json(500, { error: 'Could not generate unique slug', cause: String(lastError) });
+  console.error('slug generation exhausted retries');
+  return json(500, { error: 'Could not generate unique slug' });
 };
 
 function json(status: number, body: unknown): Response {

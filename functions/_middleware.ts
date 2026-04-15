@@ -3,8 +3,7 @@ export const onRequest: PagesFunction = async (ctx) => {
     return await ctx.next();
   } catch (err) {
     console.error(err);
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: 'Internal error' }), {
       status: 500,
       headers: { 'content-type': 'application/json' },
     });
