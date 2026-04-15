@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import TopActions from '@/components/TopActions';
 import EventCalendar from '@/components/EventCalendar';
 import NameBar from '@/components/NameBar';
 import BestDays from '@/components/BestDays';
@@ -88,6 +89,9 @@ export default function EventPage() {
     setErrorMsg(null);
     try {
       await upsertSubmission(slug, { name, dates: [...mine].sort() });
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/${slug}`);
+      } catch {}
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 1500);
       await load();
@@ -112,15 +116,19 @@ export default function EventPage() {
   return (
     <Layout theme={data.event.theme}>
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10">
-        <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-ink">{data.event.title}</h1>
             <p className="text-sm text-ink/50 mt-1">
               🗓 {fmt(data.event.startDate)} – {fmt(data.event.endDate)} · {totalPeople} people
             </p>
           </div>
-          <Link to="/" className="flex items-center gap-2 text-brand font-semibold text-sm md:text-base hover:opacity-80 transition-opacity">
-            freewhen.me
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-ink shadow-md ring-1 ring-black/5 hover:bg-white hover:shadow-lg transition shrink-0"
+          >
+            <span aria-hidden>＋</span>
+            <span>New event</span>
           </Link>
         </div>
 
@@ -153,10 +161,14 @@ export default function EventPage() {
                 variant="primary"
                 className="w-full"
               >
-                Submit {t.buttonEmoji}
+                Submit & Copy Link
               </Button>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <TopActions />
         </div>
 
         <ConfettiBurst show={showConfetti} emoji={t.confettiEmoji} />

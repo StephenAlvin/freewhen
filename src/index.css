@@ -62,6 +62,19 @@ body {
 .rdp-range_middle .rdp-day_button { background: var(--fw-soft); }
 .rdp-outside .rdp-day_button { color: var(--fw-ink); opacity: 0.35; }
 
+@keyframes fw-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to {
+    transform:
+      translate3d(var(--fw-dx, 0px), var(--fw-dy, 0px), 0)
+      rotate(var(--fw-dr, 0deg));
+  }
+}
+.fw-drifter {
+  will-change: transform;
+  animation: fw-drift var(--fw-dur, 20s) ease-in-out var(--fw-delay, 0s) infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
