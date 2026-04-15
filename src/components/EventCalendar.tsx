@@ -16,6 +16,8 @@ type GridItem =
   | { type: 'blank'; key: string }
   | { type: 'date'; date: string };
 
+const TAP_THRESHOLD = 10;
+
 function heatClass(count: number, total: number): string {
   if (total === 0 || count === 0) return 'bg-[var(--fw-heat-0)]';
   const ratio = count / total;
@@ -66,6 +68,7 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
   const dragModeRef = useRef<boolean | null>(null);
   const draggedOverRef = useRef<Set<string>>(new Set());
   const lastTouchAtRef = useRef(0);
+  const pendingTapRef = useRef<{ date: string; x: number; y: number } | null>(null);
   const mineRef = useRef(mine);
   const onToggleRef = useRef(onToggle);
 
@@ -91,13 +94,34 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
 
   useEffect(() => {
     function end() {
+      if (pendingTapRef.current && dragModeRef.current === null) {
+        const pending = pendingTapRef.current;
+        pendingTapRef.current = null;
+        onToggleRef.current(pending.date);
+      }
+      pendingTapRef.current = null;
       dragModeRef.current = null;
       draggedOverRef.current.clear();
     }
     function touchMove(e: TouchEvent) {
-      if (dragModeRef.current === null) return;
       const touch = e.touches[0];
       if (!touch) return;
+
+      if (pendingTapRef.current && dragModeRef.current === null) {
+        const dx = touch.clientX - pendingTapRef.current.x;
+        const dy = touch.clientY - pendingTapRef.current.y;
+        if (Math.hypot(dx, dy) < TAP_THRESHOLD) return;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          startDrag(pendingTapRef.current.date);
+          pendingTapRef.current = null;
+        } else {
+          pendingTapRef.current = null;
+          return;
+        }
+      }
+
+      if (dragModeRef.current === null) return;
+
       const el = document.elementFromPoint(touch.clientX, touch.clientY);
       const dateEl = el?.closest('[data-date]') as HTMLElement | null;
       if (dateEl) {
@@ -116,7 +140,7 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
       window.removeEventListener('touchcancel', end);
       window.removeEventListener('touchmove', touchMove);
     };
-  }, [applyAt]);
+  }, [applyAt, startDrag]);
 
   return (
     <div className="bg-surface rounded-chunk p-5 border border-[var(--fw-soft)] shadow-card select-none">
@@ -164,8 +188,9 @@ export default function EventCalendar({ startDate, endDate, counts, totalPeople,
               }}
               onTouchStart={(e) => {
                 lastTouchAtRef.current = Date.now();
-                e.preventDefault();
-                startDrag(date);
+                const touch = e.touches[0];
+                if (!touch) return;
+                pendingTapRef.current = { date, x: touch.clientX, y: touch.clientY };
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
