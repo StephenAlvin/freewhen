@@ -4,79 +4,118 @@ import userEvent from '@testing-library/user-event';
 import { addDays } from 'date-fns';
 import RangeControl from './RangeControl';
 import { toIsoDate } from '@/lib/dates';
-import { DEFAULT_RANGE_DAYS } from '@/types';
 
-describe('RangeControl (collapsed)', () => {
+const today = () => toIsoDate(new Date());
+const todayPlus = (n: number) => toIsoDate(addDays(new Date(), n));
+
+describe('RangeControl (preset chips)', () => {
   const noop = () => {};
 
-  it('renders the default helper sentence with the computed day count', () => {
-    render(<RangeControl startDate="2026-04-15" endDate="2026-05-14" onChange={noop} />);
-    expect(screen.getByText(/open the next 30 days for people to mark their availability/i))
-      .toBeInTheDocument();
+  it('renders a Date range radiogroup with four chips, 30 days checked by default', () => {
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={noop} />);
+    expect(screen.getByRole('radiogroup', { name: /date range/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /^30 days$/i })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: /^45 days$/i })).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('radio', { name: /^60 days$/i })).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('radio', { name: /^custom range$/i })).toHaveAttribute('aria-checked', 'false');
   });
 
-  it('reflects a non-default range in the collapsed sentence', () => {
-    render(<RangeControl startDate="2026-04-15" endDate="2026-04-21" onChange={noop} />);
-    expect(screen.getByText(/open the next 7 days/i)).toBeInTheDocument();
+  it('does not reveal From/To inputs in the default preset state', () => {
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={noop} />);
+    expect(screen.queryByLabelText(/^from$/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^to$/i)).not.toBeInTheDocument();
   });
 
-  it('shows a Fix a date range button with aria-expanded=false', () => {
-    render(<RangeControl startDate="2026-04-15" endDate="2026-05-14" onChange={noop} />);
-    const btn = screen.getByRole('button', { name: /fix a date range/i });
-    expect(btn).toHaveAttribute('aria-expanded', 'false');
+  it('selecting 45 days checks that chip and fires onChange(today, today+44)', async () => {
+    const onChange = vi.fn();
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^45 days$/i }));
+    expect(screen.getByRole('radio', { name: /^45 days$/i })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: /^30 days$/i })).toHaveAttribute('aria-checked', 'false');
+    expect(onChange).toHaveBeenCalledWith(today(), todayPlus(44));
+    expect(screen.queryByLabelText(/^from$/i)).not.toBeInTheDocument();
+  });
+
+  it('selecting 60 days fires onChange(today, today+59)', async () => {
+    const onChange = vi.fn();
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^60 days$/i }));
+    expect(onChange).toHaveBeenCalledWith(today(), todayPlus(59));
   });
 
   it('emits onValidityChange(true) on mount for a valid default range', () => {
     const onValidity = vi.fn();
     render(
       <RangeControl
-        startDate="2026-04-15"
-        endDate="2026-05-14"
-        onChange={noop}
+        startDate={today()}
+        endDate={todayPlus(29)}
+        onChange={() => {}}
         onValidityChange={onValidity}
-      />
+      />,
     );
     expect(onValidity).toHaveBeenCalledWith(true);
   });
 });
 
-describe('RangeControl (expanded)', () => {
+describe('RangeControl (custom range)', () => {
   const noop = () => {};
-  const today = toIsoDate(new Date());
-  const defaultEnd = toIsoDate(addDays(new Date(), DEFAULT_RANGE_DAYS - 1));
 
-  it('reveals From and To date inputs when Fix a date range is clicked', async () => {
-    render(<RangeControl startDate={today} endDate={defaultEnd} onChange={noop} />);
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
+  it('selecting Custom range pre-fills to today -> today+29 and reveals From/To inputs', async () => {
+    const onChange = vi.fn();
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^custom range$/i }));
+    expect(onChange).toHaveBeenCalledWith(today(), todayPlus(29));
     expect(screen.getByLabelText(/^from$/i)).toHaveAttribute('type', 'date');
     expect(screen.getByLabelText(/^to$/i)).toHaveAttribute('type', 'date');
+    expect(screen.getByRole('radio', { name: /^custom range$/i })).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('shows a Use default range button after expanding', async () => {
-    render(<RangeControl startDate={today} endDate={defaultEnd} onChange={noop} />);
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
-    expect(screen.getByRole('button', { name: /use default range/i })).toBeInTheDocument();
-  });
-
-  it('emits onChange when the From input changes', async () => {
+  it('editing the From input fires onChange with the new value and keeps Custom range checked', async () => {
     const onChange = vi.fn();
-    render(<RangeControl startDate={today} endDate={defaultEnd} onChange={onChange} />);
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
-    const future = toIsoDate(addDays(new Date(), 5));
-    fireEvent.change(screen.getByLabelText(/^from$/i), { target: { value: future } });
-    expect(onChange).toHaveBeenCalledWith(future, defaultEnd);
+    const { rerender } = render(
+      <RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />,
+    );
+    await userEvent.click(screen.getByRole('radio', { name: /^custom range$/i }));
+    const newStart = todayPlus(5);
+    fireEvent.change(screen.getByLabelText(/^from$/i), { target: { value: newStart } });
+    expect(onChange).toHaveBeenLastCalledWith(newStart, todayPlus(29));
+    rerender(<RangeControl startDate={newStart} endDate={todayPlus(29)} onChange={onChange} />);
+    expect(screen.getByRole('radio', { name: /^custom range$/i })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByLabelText(/^from$/i)).toBeInTheDocument();
   });
 
-  it('shows an error and emits onValidityChange(false) for end-before-start', async () => {
+  it('clicking a preset chip from custom mode hides the From/To inputs and resets dates', async () => {
+    const onChange = vi.fn();
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^custom range$/i }));
+    expect(screen.getByLabelText(/^from$/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: /^30 days$/i }));
+    expect(screen.queryByLabelText(/^from$/i)).not.toBeInTheDocument();
+    expect(onChange).toHaveBeenLastCalledWith(today(), todayPlus(29));
+    expect(screen.getByRole('radio', { name: /^30 days$/i })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: /^custom range$/i })).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('shows the end-before-start error and emits onValidityChange(false) in custom mode', async () => {
     const onValidity = vi.fn();
     const { rerender } = render(
-      <RangeControl startDate={today} endDate={defaultEnd} onChange={noop} onValidityChange={onValidity} />
+      <RangeControl
+        startDate={today()}
+        endDate={todayPlus(29)}
+        onChange={noop}
+        onValidityChange={onValidity}
+      />,
     );
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
-    const later = toIsoDate(addDays(new Date(), 10));
-    const earlier = toIsoDate(addDays(new Date(), 5));
+    await userEvent.click(screen.getByRole('radio', { name: /^custom range$/i }));
+    const later = todayPlus(10);
+    const earlier = todayPlus(5);
     rerender(
-      <RangeControl startDate={later} endDate={earlier} onChange={noop} onValidityChange={onValidity} />
+      <RangeControl
+        startDate={later}
+        endDate={earlier}
+        onChange={noop}
+        onValidityChange={onValidity}
+      />,
     );
     expect(screen.getByRole('alert')).toHaveTextContent(/end date must be on or after the start date/i);
     expect(onValidity).toHaveBeenLastCalledWith(false);
@@ -84,20 +123,10 @@ describe('RangeControl (expanded)', () => {
 
   it('shows the too-long error for ranges greater than 90 days', async () => {
     const { rerender } = render(
-      <RangeControl startDate={today} endDate={defaultEnd} onChange={noop} />
+      <RangeControl startDate={today()} endDate={todayPlus(29)} onChange={noop} />,
     );
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
-    const longEnd = toIsoDate(addDays(new Date(), 91));
-    rerender(<RangeControl startDate={today} endDate={longEnd} onChange={noop} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^custom range$/i }));
+    rerender(<RangeControl startDate={today()} endDate={todayPlus(91)} onChange={noop} />);
     expect(screen.getByRole('alert')).toHaveTextContent(/range can't be more than 90 days/i);
-  });
-
-  it('Use default range collapses, resets dates, and fires onChange with defaults', async () => {
-    const onChange = vi.fn();
-    render(<RangeControl startDate={today} endDate={toIsoDate(addDays(new Date(), 5))} onChange={onChange} />);
-    await userEvent.click(screen.getByRole('button', { name: /fix a date range/i }));
-    await userEvent.click(screen.getByRole('button', { name: /use default range/i }));
-    expect(onChange).toHaveBeenLastCalledWith(today, defaultEnd);
-    expect(screen.getByRole('button', { name: /fix a date range/i })).toBeInTheDocument();
   });
 });
