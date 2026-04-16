@@ -83,13 +83,14 @@ describe('HomePage', () => {
 
   it('submits the 45-day preset when selected', async () => {
     renderHome();
+    const expectedEnd = toIsoDate(addDays(new Date(), 44));
     await userEvent.type(screen.getByPlaceholderText(/what are we planning/i), 'Brunch');
     await userEvent.click(screen.getByRole('radio', { name: /^45 days$/i }));
     await userEvent.click(screen.getByRole('button', { name: /create event/i }));
     expect(api.createEvent).toHaveBeenCalledWith(expect.objectContaining({
       title: 'Brunch',
       startDate: today,
-      endDate: toIsoDate(addDays(new Date(), 44)),
+      endDate: expectedEnd,
     }));
   });
 });
