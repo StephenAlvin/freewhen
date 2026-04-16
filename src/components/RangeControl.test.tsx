@@ -55,6 +55,13 @@ describe('RangeControl (preset chips)', () => {
     );
     expect(onValidity).toHaveBeenCalledWith(true);
   });
+
+  it('clicking the already-active chip does not refire onChange', async () => {
+    const onChange = vi.fn();
+    render(<RangeControl startDate={today()} endDate={todayPlus(29)} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('radio', { name: /^30 days$/i }));
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });
 
 describe('RangeControl (custom range)', () => {

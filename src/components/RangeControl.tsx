@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { addDays } from 'date-fns';
 import { toIsoDate, validateRange, type RangeError } from '@/lib/dates';
 import { cn } from '@/lib/cn';
+import { DEFAULT_RANGE_DAYS } from '@/types';
 
 type PresetDays = 30 | 45 | 60;
 type Mode = PresetDays | 'custom';
@@ -12,7 +13,10 @@ const PRESETS: readonly { value: PresetDays; label: string }[] = [
   { value: 60, label: '60 days' },
 ];
 
-const CUSTOM_PREFILL_DAYS = 30;
+// The initial preset chip and the Custom-mode pre-fill both use DEFAULT_RANGE_DAYS
+// as the default window size. DEFAULT_RANGE_DAYS must be one of PRESETS so the
+// initial chip is always checked on mount.
+const INITIAL_MODE = DEFAULT_RANGE_DAYS as PresetDays;
 
 const ERROR_MESSAGES: Record<Exclude<RangeError, null>, string> = {
   'invalid': 'Please enter valid dates.',
@@ -29,7 +33,7 @@ interface Props {
 }
 
 export default function RangeControl({ startDate, endDate, onChange, onValidityChange }: Props) {
-  const [mode, setMode] = useState<Mode>(30);
+  const [mode, setMode] = useState<Mode>(INITIAL_MODE);
 
   const todayIso = useMemo(() => toIsoDate(new Date()), []);
   const error = useMemo(
@@ -42,6 +46,7 @@ export default function RangeControl({ startDate, endDate, onChange, onValidityC
   }, [error, onValidityChange]);
 
   function selectPreset(days: PresetDays) {
+    if (mode === days) return;
     setMode(days);
     const start = toIsoDate(new Date());
     const end = toIsoDate(addDays(new Date(), days - 1));
@@ -52,7 +57,7 @@ export default function RangeControl({ startDate, endDate, onChange, onValidityC
     if (mode === 'custom') return;
     setMode('custom');
     const start = toIsoDate(new Date());
-    const end = toIsoDate(addDays(new Date(), CUSTOM_PREFILL_DAYS - 1));
+    const end = toIsoDate(addDays(new Date(), DEFAULT_RANGE_DAYS - 1));
     onChange(start, end);
   }
 
