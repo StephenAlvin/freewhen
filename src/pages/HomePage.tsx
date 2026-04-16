@@ -39,6 +39,8 @@ export default function HomePage() {
     }
   }
 
+  const sectionLabel = 'text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1';
+
   return (
     <Layout theme={theme}>
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10">
@@ -48,12 +50,12 @@ export default function HomePage() {
 
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1">Pick a theme</div>
+            <div className={sectionLabel}>Pick a theme</div>
             <ThemePicker value={theme} onChange={setTheme} />
           </div>
 
           <div>
-            <div className="text-sm font-semibold uppercase tracking-wide text-ink/50 mb-2 pl-1">Name the event</div>
+            <div className={sectionLabel}>Name the event</div>
             <TitleInput
               placeholder="What are we planning?"
               value={title}
@@ -62,15 +64,19 @@ export default function HomePage() {
             />
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
-          <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <div className={sectionLabel}>Which date-range might work?</div>
             <RangeControl
               startDate={startDate}
               endDate={endDate}
               onChange={(s, e) => { setStartDate(s); setEndDate(e); }}
               onValidityChange={setRangeValid}
             />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <div className="flex justify-end">
             <Button type="submit" disabled={!canSubmit} loading={loading} className="w-full sm:w-auto">
               Create Event
             </Button>
