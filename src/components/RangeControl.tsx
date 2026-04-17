@@ -73,7 +73,7 @@ export default function RangeControl({ startDate, endDate, onChange, onValidityC
 
   return (
     <div>
-      <div role="radiogroup" aria-label="Date range" className="grid grid-cols-4 gap-2">
+      <div role="radiogroup" aria-label="Date range" className="grid grid-cols-4 gap-2 mt-2">
         {PRESETS.map((p) => (
           <button
             key={p.value}

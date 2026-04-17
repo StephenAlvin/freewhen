@@ -65,7 +65,7 @@ export default function HomePage() {
           </div>
 
           <div>
-            <div className={sectionLabel}>Which date-range might work?</div>
+            <div className={sectionLabel}>Happening in the next...</div>
             <RangeControl
               startDate={startDate}
               endDate={endDate}
